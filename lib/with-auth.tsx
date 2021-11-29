@@ -10,5 +10,5 @@ export const WithAuth = memo(function WithAuth({children}: Props) {
 	const {isLoading, isAuthenticated, user} = useAuth0();
 	const ch = React.cloneElement(children, {user: user});
 
-	return (isLoading ? <div>Authorizing...</div> : isAuthenticated ? ch : <RedirectToLogin/>);
+	return (isLoading ? <div>Authorizing...</div> : isAuthenticated ? ch : <div>Is not authenticated</div>);
 });

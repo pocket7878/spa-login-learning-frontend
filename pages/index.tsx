@@ -1,10 +1,20 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import Head from 'next/head'
 import Image from 'next/image'
+import { useCallback } from 'react';
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
-  const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isLoading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+
+  const handleLoginButtonClicked = useCallback(() => {
+    loginWithRedirect();
+  }, [loginWithRedirect]);
+
+  const handleLogoutButtonClicked = useCallback(() => {
+    logout();
+  }, [logout]);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -17,7 +27,8 @@ export default function Home() {
         <h1 className={styles.title}>
           SPA Login Learning
         </h1>
-        {isLoading ? <div>Loading...</div> : isAuthenticated ? <div>Logged in</div> : <button onClick={() => loginWithRedirect() }>Login</button>}
+        {isAuthenticated && <button onClick={handleLogoutButtonClicked}>ログアウト</button>}
+        {!isAuthenticated && <button onClick={handleLoginButtonClicked}>ログイン</button>}
       </main>
 
       <footer className={styles.footer}>

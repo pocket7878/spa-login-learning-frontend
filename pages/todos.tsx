@@ -87,6 +87,7 @@ export default function Todos() {
             Authorization: `Bearer ${authToken}`,
 						"Content-Type": "application/json",
           },
+					data: {},
         }
       );
 

@@ -9,6 +9,7 @@ import { WithAuth } from "../lib/with-auth";
 import styles from "../styles/Home.module.css";
 
 type Todo = {
+  id: string;
   description: string;
 };
 
@@ -23,7 +24,7 @@ export default function Todos() {
     getAccessTokenWithPopup,
     getAccessTokenSilently,
   } = useAuth0();
-  const { register, handleSubmit } = useForm<ToDoFormData>();
+  const { register, handleSubmit, setValue } = useForm<ToDoFormData>();
 
   const todoFetcher = useCallback(async () => {
     const authToken = await getAccessTokenSilently({
@@ -35,6 +36,7 @@ export default function Todos() {
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
+          "content-type": "application/json",
         },
       }
     );
@@ -60,11 +62,34 @@ export default function Todos() {
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
+            "content-type": "application/json",
           },
         }
       );
 
-			mutate("/todos")
+      mutate("/todos");
+      setValue("description", "");
+    },
+    [getAccessTokenSilently, setValue]
+  );
+
+  const handleDelete = useCallback(
+    async (todo: Todo) => {
+      const authToken = await getAccessTokenSilently({
+        audience: "https://spa-login-test.herokuapp.com/",
+        scope: "delete:todos",
+      });
+      await axios.delete(
+        `https://spa-login-test.herokuapp.com/todos/${todo.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+
+      mutate("/todos");
     },
     [getAccessTokenSilently]
   );
@@ -80,24 +105,45 @@ export default function Todos() {
 
         <main className={styles.main}>
           <h1 className={styles.title}>Your TODOs</h1>
+          {isAuthenticated && user.email}
+          <form onSubmit={handleSubmit(handleSubmitImpl)} className="p-2">
+            <input
+              {...register("description", { required: true })}
+              type="text"
+              className="bg-gray-100 p-2 rounded-md mr-2 w-64"
+              placeholder="What needs to be done?"
+            />
+            <input
+              className="bg-blue-800 text-white p-2 rounded-md"
+              type="submit"
+              value="追加"
+            />
+          </form>
           {isAuthenticated && (
             <>
-              <p>{user.email} todo</p>
               {todos && (
-                <ul>
+                <div className="flex flex-col">
                   {todos.map((todo) => {
-                    return <li key={todo.description}>{todo.description}</li>;
+                    return (
+                      <div
+                        className="flex flex-row m-2"
+                        key={`todo_${todo.id}`}
+                      >
+                        <div className="p-2 bg-gray-100 flex-grow mr-2">
+                          {todo.description}
+                        </div>
+                        <button
+                          onClick={() => handleDelete(todo)}
+                          className="bg-red-600 text-white p-2 rounded-md flex-grow-0"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    );
                   })}
-                </ul>
+                </div>
               )}
               {error && <p>{error.message}</p>}
-              <form onSubmit={handleSubmit(handleSubmitImpl)}>
-                <input
-                  {...register("description", { required: true })}
-                  type="text"
-                />
-                <input type="submit" value="追加" />
-              </form>
             </>
           )}
         </main>

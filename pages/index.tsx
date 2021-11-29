@@ -27,7 +27,7 @@ export default function Home() {
         <h1 className={styles.title}>
           SPA Login Learning
         </h1>
-        {isAuthenticated && <button onClick={handleLogoutButtonClicked}>ログアウト</button>}
+        {isAuthenticated && <button className="bg-white shadow-md rounded-md p-1 bg-primary" onClick={handleLogoutButtonClicked}>ログアウト</button>}
         {!isAuthenticated && <button onClick={handleLoginButtonClicked}>ログイン</button>}
       </main>
 

@@ -36,9 +36,10 @@ export default function Todos() {
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
-          "content-type": "application/json",
+          "Content-Type": "application/json",
         },
-      }
+				data: {},
+      },
     );
 
     return response.data;
@@ -62,7 +63,7 @@ export default function Todos() {
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
-            "content-type": "application/json",
+						"Content-Type": "application/json",
           },
         }
       );
@@ -84,7 +85,7 @@ export default function Todos() {
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
-            "content-type": "application/json",
+						"Content-Type": "application/json",
           },
         }
       );
